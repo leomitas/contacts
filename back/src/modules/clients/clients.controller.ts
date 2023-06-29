@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode } from '@nestjs/common'
 import { ClientsService } from './clients.service'
 import { CreateClientDto } from './dto/create-client.dto'
 import { UpdateClientDto } from './dto/update-client.dto'
+import { ApiTags } from '@nestjs/swagger'
 
 
 @ApiTags('clients')
@@ -9,12 +10,12 @@ import { UpdateClientDto } from './dto/update-client.dto'
 export class ClientsController {
   constructor(private readonly clientsService: ClientsService) {}
 
-  @Post()
+  @Post('')
   create(@Body() createClientDto: CreateClientDto) {
     return this.clientsService.create(createClientDto)
   }
 
-  @Get()
+  @Get('')
   findAll() {
     return this.clientsService.findAll()
   }
@@ -29,6 +30,7 @@ export class ClientsController {
     return this.clientsService.update(+id, updateClientDto)
   }
 
+  @HttpCode(204)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.clientsService.remove(+id)

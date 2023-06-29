@@ -1,26 +1,26 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "src/database/prisma.service";
-import { ContactsRepository } from "../contacts.repository";
-import { CreateContactDto } from "../../dto/create-contact.dto";
-import { Contact } from "../../entities/contact.entity";
-import { UpdateContactDto } from "../../dto/update-contact.dto";
+import { Injectable } from "@nestjs/common" 
+import { PrismaService } from "src/database/prisma.service" 
+import { ContactsRepository } from "../contacts.repository" 
+import { CreateContactDto } from "../../dto/create-contact.dto" 
+import { Contact } from "../../entities/contact.entity" 
+import { UpdateContactDto } from "../../dto/update-contact.dto" 
 
 @Injectable()
 export class ContactsPrismaRepository implements ContactsRepository {
     constructor(private prisma: PrismaService) {}
-    async create(data: CreateContactDto): Promise<Contact> {
+    async create(data: CreateContactDto, clientId: number): Promise<Contact> {
         const contact = new Contact()
         Object.assign(contact, {
             ...data
         })
-        const currentDate = new Date();
         const newContact = await this.prisma.contact.create({
-            data: { 
-                created_at:currentDate,
-                name: contact.name,
-                email: contact.email,
-                phone: contact.phone,
-                client_id: contact.client_id
+            data: {
+                email: data.email,
+                name: data.name,
+                phone: data.phone,
+                client: {
+                    connect: {id: Number(clientId)}
+                }
             }
         })
         return newContact
