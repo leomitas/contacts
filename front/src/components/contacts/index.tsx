@@ -1,5 +1,19 @@
+import { useContext } from "react"
+import { ContactContext } from "../../contexts/contacts"
+
 export const Contacts = () => {
+  const { contacts } = useContext(ContactContext)
   return (
-    <h1>contacts</h1>
+    <>
+      <p>Contatos</p>
+        {contacts?.map((contact) => (
+            <div>
+                <p>{contact.name}</p>
+                <p>{contact.email}</p>
+                <p>{contact.phone}</p>
+                <hr/>
+            </div>
+        ))}
+    </>
   )
 }

@@ -1,4 +1,5 @@
 import { ClientProvider } from "./contexts/client"
+import { ContactProvider } from "./contexts/contacts"
 import { RoutesMain } from "./routes"
 
 export const App = () => {
@@ -6,7 +7,9 @@ export const App = () => {
   return (
     <>
       <ClientProvider>
-        <RoutesMain />
+        <ContactProvider>
+          <RoutesMain />
+        </ContactProvider>
       </ClientProvider>
     </>
   )

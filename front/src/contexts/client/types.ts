@@ -1,3 +1,5 @@
+import { JwtPayload } from "jwt-decode";
+
 export interface iClient {
     id: string
 	created_at: Date
@@ -6,11 +8,10 @@ export interface iClient {
 	phone: string
 }
 
-export interface iContact {
-    id: string
-    created_at: string
-    name: string
-    email: string
-    phone: string
+export interface TokenData extends JwtPayload {
+	type: string;
+	email: string;
+	iat: number;
+	exp: number;
+	sub: string;
 }
-

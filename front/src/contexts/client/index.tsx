@@ -1,9 +1,10 @@
 import { createContext, useEffect, useState } from "react"
-import { iClient, iContact } from "./types"
+import { TokenData, iClient } from "./types"
 import { api } from "../../services/api"
 import { useNavigate } from "react-router-dom"
 import { LoginData } from "../../pages/login/validator"
 import { RegisterData } from "../../pages/register/validator"
+import jwtDecode from "jwt-decode"
 
 interface Props {
     children: React.ReactNode
@@ -13,7 +14,6 @@ interface ClientProviderData  {
     client: iClient | null
     submitLogin: (data: LoginData) => void
     submitRegister: (data: RegisterData) => void
-    contacts: iContact[] | null
 }
 
 export const ClientContext = createContext<ClientProviderData>({} as ClientProviderData)
@@ -21,28 +21,17 @@ export const ClientContext = createContext<ClientProviderData>({} as ClientProvi
 export const ClientProvider = ({ children }: Props) => {
     const navigate = useNavigate()
     const [client, setClient] = useState<iClient | null>(null)
-    const [token, setToken] = useState<string | null>(null)
-    const [contacts, setContacts] = useState<iContact[] | null>(null)
     
     useEffect(() => {
-        const token = localStorage.getItem('token')
-        if (!token) {
-            return
-        }
-        api.defaults.headers.common.authorization = `Bearer ${token}`
-        getProfile(token)
+        getProfile()
     }, [])
 
     async function submitLogin(data: LoginData) {
-        console.log(data)
         try {
             const response = await api.post("/login", data)
-      
             const { token } = response.data
-      
             api.defaults.headers.common.authorization = `Bearer ${token}`
             localStorage.setItem("token", token)
-      
             navigate('dashboard')
         } catch (error) {
             console.error(error)
@@ -50,36 +39,24 @@ export const ClientProvider = ({ children }: Props) => {
     }
 
     async function submitRegister(data: LoginData) {
-        console.log(data)
         try {
-            await api.post("/client", data)
-            navigate('login')
+            await api.post("/clients", data)
+            navigate('/dashboard')
         } catch (error) {
             console.error(error)
         }
     }
 
-    async function getContacts(authToken: string = token!) {
+    async function getProfile() {
+        const token = localStorage.getItem('token')
+        const decodedToken: TokenData = jwtDecode(token!)
         try {
-            const response = await api.get("/contacts", {headers: {Authorization: `Bearer ${authToken}`}})
-      
-            setContacts(response.data)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    async function getProfile(authToken: string = token!) {
-        try {
-            const response = await api.get(`/clients/${client?.id}`, {headers: {Authorization: `Bearer ${authToken}`}})
+            const response = await api.get(`/clients/${decodedToken.sub}`, {headers: {Authorization: `Bearer ${token}`}})
             setClient(response.data)
+            console.log(response.data)
             navigate("/dashboard")
-            setToken(authToken)
-            getContacts(authToken)
         } catch (error) {
             console.error(error)
-            setClient(null)
-            localStorage.clear()
         }
     }
 
@@ -87,8 +64,7 @@ export const ClientProvider = ({ children }: Props) => {
         <ClientContext.Provider value={{
             client,
             submitLogin,
-            submitRegister,
-            contacts
+            submitRegister
         }}>
             { children }
         </ClientContext.Provider>
