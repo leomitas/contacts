@@ -6,9 +6,9 @@ import { Login } from "../pages/login"
 export const RoutesMain = () => {
     return (
       <Routes>
-        <Route path="/" element={<Login />}/>
+        <Route path="/" element={<Dashboard />}/>
+        <Route path="/login" element={<Login />}/>
         <Route path="/register" element={<Register />}/>
-        <Route path="/dashboard" element={<Dashboard />}/>
       </Routes>
     )
 }

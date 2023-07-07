@@ -4,20 +4,26 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { LoginData, schema } from "./validator"
 import { Input } from "../../components/input"
+import Header from "../../components/header"
+import { Link } from "react-router-dom"
+import { LoginStyled } from "./style"
 
 
 export const Login = () => {
     const { submitLogin } = useContext(ClientContext)
 
     const { register, handleSubmit, formState: { errors } } = useForm<LoginData>({
-        resolver: zodResolver(schema)
+      resolver: zodResolver(schema)
     })
 
     return (
-      <main>
-        <h2>login</h2>
-        <form onSubmit={handleSubmit(submitLogin)}>
-            <Input 
+      <LoginStyled>
+        <Header />
+        <main>
+          <h2>Login</h2>
+          <form onSubmit={handleSubmit(submitLogin)}>
+            <div className="div-inputs">
+              <Input 
                 id='email'
                 label='Email'
                 placeholder="Digite seu email"
@@ -25,8 +31,8 @@ export const Login = () => {
                 register={register('email')}
                 error={errors['email']?.message}
                 disabled={false}
-            />
-            <Input 
+              />
+              <Input 
                 id='password'
                 label='Password'
                 placeholder="Digite sua senha"
@@ -34,9 +40,13 @@ export const Login = () => {
                 register={register('password')}
                 error={errors['password']?.message}
                 disabled={false}
-            />
-            <button type="submit">Entrar</button>
-        </form>
-      </main>
+              />
+            </div>
+            <button type="submit" className="button-brand">Entrar</button>
+          </form>
+          <p>Ainda não possui conta?</p>
+          <Link to={'/register'}><button className="button-white">Cadastro</button></Link>
+        </main>
+      </LoginStyled>
     )
 }

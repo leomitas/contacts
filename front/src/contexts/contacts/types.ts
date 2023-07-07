@@ -6,3 +6,8 @@ export interface iContact {
     phone: string
     client_id: number
 }
+export interface iEditContact {
+    name?: string
+    email?: string
+    phone?: string
+}
