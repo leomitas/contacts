@@ -1,9 +1,10 @@
-import { Injectable } from "@nestjs/common";
-import { ClientsRepository } from "../clients.repository";
-import { PrismaService } from "src/database/prisma.service";
-import { CreateClientDto } from "../../dto/create-client.dto";
-import { Client } from "../../entities/client.entity";
-import { UpdateClientDto } from "../../dto/update-client.dto";
+import { Injectable } from "@nestjs/common" 
+import { ClientsRepository } from "../clients.repository" 
+import { PrismaService } from "src/database/prisma.service" 
+import { CreateClientDto } from "../../dto/create-client.dto" 
+import { Client } from "../../entities/client.entity" 
+import { UpdateClientDto } from "../../dto/update-client.dto" 
+import { plainToInstance } from "class-transformer" 
 
 @Injectable()
 export class ClientsPrismaRepository implements ClientsRepository {
@@ -15,12 +16,10 @@ export class ClientsPrismaRepository implements ClientsRepository {
         })
         const newClient = await this.prisma.client.create({
             data: { 
-                name:client.name,
-                email:client.email,
-                phone:client.phone,
+                ...client
             }
         })
-        return newClient
+        return plainToInstance(Client, newClient)
     }
     async findAll(): Promise<Client[]> {
         const clients = await this.prisma.client.findMany()
@@ -30,6 +29,12 @@ export class ClientsPrismaRepository implements ClientsRepository {
         const client = await this.prisma.client.findUnique({
             where: { id }
         })
+        return plainToInstance(Client, client)
+    }
+    async findByEmail(email: string): Promise<Client> {
+        const client = await this.prisma.client.findUnique({
+          where: { email },
+        }) 
         return client
     }
     async update(id: number, data: UpdateClientDto): Promise<Client> {
@@ -37,7 +42,7 @@ export class ClientsPrismaRepository implements ClientsRepository {
             where: { id },
             data: { ...data }
         })
-        return client
+        return plainToInstance(Client, client)
     }
     async delete(id: number): Promise<void> {
         await this.prisma.client.delete({

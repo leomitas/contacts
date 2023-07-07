@@ -6,6 +6,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
+  app.enableCors()
+
   const config = new DocumentBuilder()
   .setTitle('Contacts')
   .setDescription('Manage your contacts')
@@ -16,7 +18,8 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document)
 
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true })
+    new ValidationPipe({ whitelist: true }),
+    new ValidationPipe({ transform: true, transformOptions: {groups: ['transform']} })
   )
   await app.listen(3000)
 }
